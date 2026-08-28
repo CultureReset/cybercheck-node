@@ -1,0 +1,5 @@
+android-tools-adb
+ca-certificates
+curl
+network-manager
+usbutils

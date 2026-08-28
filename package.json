@@ -1,0 +1,11 @@
+{
+  "name": "cybercheck-node",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "A Raspberry Pi with a phone plugged into it that a business owner never has to think about.",
+  "scripts": {
+    "test": "node tests/agent.test.mjs",
+    "health": "./scripts/health.sh"
+  }
+}

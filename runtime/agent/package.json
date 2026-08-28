@@ -1,0 +1,8 @@
+{
+  "name": "cybercheck-node-agent",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Reads the owner's config, reports status, keeps the phone and the tunnel honest.",
+  "main": "index.js"
+}

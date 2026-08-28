@@ -1,0 +1,6 @@
+node_modules
+*.img
+*.img.xz
+work/
+deploy/
+boot/cybercheck.status
