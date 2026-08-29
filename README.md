@@ -1,72 +1,88 @@
 # cybercheck-node
 
-A Raspberry Pi with a phone plugged into it, that a business owner never has to
-think about.
+A Linux box with a phone on the screen, that a business owner talks to.
 
-Write the image to a card, edit one file, put the card in the Pi, plug in the
-phone, power it on. It finds its way out to the platform on its own and starts
-taking work. No monitor, no keyboard, no port forwarding, no static IP, no
-router configuration.
+Write the image to a card or a flash drive, edit one file, put it in a
+Raspberry Pi, plug the phone in, power on. The phone appears on the screen by
+itself, and the desktop can be driven by voice or text from anywhere.
 
-## What it is
+## What it actually is
 
-    owner's phone ──── text or call ────► platform
-                                              │
-                                              ▼ outbound tunnel, dialled by the box
-                                        ┌───────────────┐
-                                        │  Raspberry Pi │  ← this repo
-                                        │   the node    │
-                                        └───────┬───────┘
-                                                │ USB
-                                                ▼
-                                        Android handset
-                                                │
-                                                ▼
-                                        the apps on it
+    owner calls or texts  ──►  the phone         ← the number, and the microphone
+                                    │
+                                    ▼  tells the box what to do
+                        ┌───────────────────────────┐
+                        │      Linux desktop        │   ← what gets driven
+                        │  ┌─────────────────────┐  │
+                        │  │  the phone, mirrored │  │  ← scrcpy, an ordinary window
+                        │  └─────────────────────┘  │
+                        │   browser · logged-in     │
+                        │   tools · anything else   │
+                        └───────────────────────────┘
 
-The Pi is the only thing that touches the phone. The platform never reaches
-into a home network — the box dials out and holds the connection open.
+**The desktop is the thing being operated.** The phone is how the owner reaches
+it, and it is also on the screen — so its apps are reachable too.
 
-## Flashing one
+The trick is that once the phone is a *window*, one mechanism drives
+everything. A browser tab, a point-of-sale app, a spreadsheet and the handset
+are all the same kind of target: pointer and keyboard events against a desktop.
+One thing to get right instead of two.
 
-1. Write `cybercheck-node.img` to a card or a USB stick.
-2. Open the small `boot` partition — it mounts on any Mac, Windows or Linux
-   machine — and edit `cybercheck.conf`. Wi-Fi name, Wi-Fi password, and the
-   pairing code from the dashboard. Three lines.
-3. Eject. Put it in the Pi. Plug the phone into a USB port. Power on.
-4. On the phone, tap **Allow** on the USB debugging prompt, once, ever.
-5. The dashboard shows the node online in about two minutes.
+## Making one
 
-There is no step 6. If something is wrong the box says so in
-`cybercheck.status` on that same partition, in plain English, which the owner
-can read by putting the card back in a computer.
+1. Build the image: `./image/build.sh` — about half an hour, needs Linux and
+   Docker.
+2. Write `deploy/cybercheck-node-*.img.xz` to a card or a USB stick.
+3. Leave it in the computer. A partition called **bootfs** appears. Open
+   `cybercheck.conf` on it and fill in three things: Wi-Fi name, Wi-Fi
+   password, pairing code.
+4. Eject. Card into the Pi, phone into a USB port, power on.
+5. On the phone, unlock it and tap **Allow** on the USB debugging prompt. Tick
+   *always allow*. Once, ever.
+6. The phone appears on the screen. The dashboard shows the box online.
 
-## Why it is built this way
+If something is wrong, power off, put the card back in a computer, and read
+**`cybercheck.status`** on the same partition. It is written in plain English
+and names the next thing to do.
 
-**One file on a partition anyone can mount.** Everything a non-technical person
-must supply is in `cybercheck.conf`. Headless setup that requires a terminal
-is not headless setup.
+## What runs on it
 
-**Outbound only.** The box opens a connection to the platform and keeps it.
-Nothing needs a port opened, and it works behind a phone hotspot, a marina's
-guest Wi-Fi, or a restaurant's router that nobody has the password to.
+| | |
+|---|---|
+| **X11 + openbox** | a desktop with a window manager and nothing else |
+| **scrcpy** | the phone as a window, restarted whenever it is unplugged |
+| **the executor** | click, drag, type, key, focus, screenshot against that desktop |
+| **the node** | receives work, runs it, reports back |
+| **the tunnel** | one outbound connection; nothing dials in |
 
-**ADB keys survive reboots.** The phone's "Allow USB debugging?" prompt is
-answered once. The keypair lives on a Docker volume, not in the image, so
-re-flashing the card does not make the owner walk back out to the phone.
+## Why X11 and not Wayland
 
-**Re-flashable.** All state worth keeping is on the platform. Losing the card
-loses a card.
+Wayland has no sanctioned way for one process to synthesise input into
+another's window. Every workaround is compositor-specific and breaks on update.
+X11's are twenty years old and boring, which is exactly what an appliance in a
+marina office needs.
 
-## Layout
+## Why no emulator
 
-    boot/       the file the owner edits, and the status file the box writes back
-    runtime/    docker-compose and the node agent that pairs, reports and works
-    image/      pi-gen stage that turns Raspberry Pi OS Lite into this appliance
-    scripts/    first-boot provisioning and health checks
-    tests/      config parsing and pairing logic, runnable without a Pi
+An x86 Android image on an ARM Pi means full CPU emulation — too slow to be
+useful. The phone is a real phone. If an emulator is ever wanted it belongs on
+an x86 host, filling the same executor slot.
 
 ## Checks
 
-    npm test        config parsing, status reporting, pairing — no hardware
-    ./scripts/health.sh   run on the box: power, USB, device, tunnel, containers
+    npm test          config parsing, status reporting, and the desktop
+                      executor driven against a real X server
+
+`tests/desktop.test.mjs` starts Xvfb, puts a real window on it, and makes the
+executor focus it, type into it and screenshot it. It skips cleanly where X is
+not installed, and says plainly which assertions the display could not verify.
+
+    ./scripts/health.sh    on the box: power, phone, mirror, containers, network
+
+## Layout
+
+    boot/       the file the owner edits, and the status the box writes back
+    runtime/    the executor, the node agent, docker-compose
+    image/      the pi-gen stage that builds the card
+    scripts/    first boot and health
+    tests/      runnable without a Pi

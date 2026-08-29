@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
-  "description": "A Raspberry Pi with a phone plugged into it that a business owner never has to think about.",
+  "description": "A Linux box with a phone on the screen, that a business owner talks to.",
   "scripts": {
-    "test": "node tests/agent.test.mjs",
+    "test": "node tests/agent.test.mjs && node tests/desktop.test.mjs",
     "health": "./scripts/health.sh"
   }
 }
