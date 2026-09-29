@@ -18,13 +18,15 @@ Write the image to a card or a flash drive, edit one file, put it in a
 Raspberry Pi, plug the phone in, power on. The phone appears on the screen by
 itself, and the desktop can be driven by voice or text from anywhere.
 
+
+
 <!-- branches:start -->
 ## Branches
 
 *Read from GitHub on 2026-09-29. 2 branches.*
 
-- **Default branch on GitHub:** `claude/review-codebase-zips-hck9hd`.
-- **`claude/repo-code-analysis-y4n1k7`** is where this README and the audit fixes live. It contains every commit on `claude/review-codebase-zips-hck9hd` and more (this README, the audit fixes and the screenshots).
+- **Default branch on GitHub:** `claude/review-codebase-zips-hck9hd`. It does **not** yet have this README or the audit fixes; those are on `claude/repo-code-analysis-y4n1k7`, which contains every commit of `claude/review-codebase-zips-hck9hd` and more, so it can be fast-forwarded without losing anything.
+- **`claude/repo-code-analysis-y4n1k7`** is where the README audit, the screenshots and the fixes were made.
 - Every other branch is already contained in `claude/repo-code-analysis-y4n1k7`; nothing is only on another branch.
 
 | Branch | Last commit | Not in the work branch | Last commit message |
