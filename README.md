@@ -1,9 +1,12 @@
 > **Status: replaced.** This is the earlier Raspberry Pi image for a box with a
 > phone on the screen. A Ghost box now uses `Boxes` (the screen) and
-> `nextgent-ghost-image` (the installer). Do not run this image's mirror script,
-> udev rule or docker service on a Ghost box: they would start a second adb owner.
-> `npm test` runs 14 checks on the agent and desktop files (the desktop test skips
-> without Xvfb, xdotool and scrot).
+> `nextgent-ghost-image` (the installer). It is not part of the Ghost system. Do
+> not run this image's mirror script, udev rule or docker service on a Ghost box:
+> they would start a second adb owner. `Boxes` carries copies of `runtime/agent/`,
+> `image/` and `boot/` (as `box/agent/`, `box/image/`, `box/boot/`).
+> `npm test` runs 14 checks on the config and status files (`tests/agent.test.mjs`)
+> and 18 on the desktop executor (`tests/desktop.test.mjs`); the desktop test
+> skips without Xvfb, xdotool and scrot.
 
 ---
 
@@ -61,8 +64,8 @@ and names the next thing to do.
 | **X11 + openbox** | a desktop with a window manager and nothing else |
 | **scrcpy** | the phone as a window, restarted whenever it is unplugged |
 | **the executor** | click, drag, type, key, focus, screenshot against that desktop |
-| **the node** | receives work, runs it, reports back |
-| **the tunnel** | one outbound connection; nothing dials in |
+| **the node** | receives work, runs it, reports back (container image `ghcr.io/culturereset/cybercheck-node`; its main program is not in this repo) |
+| **the tunnel** | one outbound connection; nothing dials in (container image `ghcr.io/culturereset/cybercheck-tunnel`; not in this repo) |
 
 ## Why X11 and not Wayland
 
@@ -86,12 +89,17 @@ an x86 host, filling the same executor slot.
 executor focus it, type into it and screenshot it. It skips cleanly where X is
 not installed, and says plainly which assertions the display could not verify.
 
-    ./scripts/health.sh    on the box: power, phone, mirror, containers, network
+    ./scripts/health.sh    on the box: power, phone, containers, network, disk
 
 ## Layout
 
     boot/       the file the owner edits, and the status the box writes back
-    runtime/    the executor, the node agent, docker-compose
+    runtime/    the agent's libraries (config, status, phone check, desktop
+                executor) and docker-compose. The `node` and `tunnel`
+                containers are images pulled from ghcr.io; the node's entry
+                point (`index.js`) and `scripts/healthcheck.js` are not in
+                this repo.
     image/      the pi-gen stage that builds the card
     scripts/    first boot and health
+    docs/       FLASH.md (buying, building, writing) and DESIGN.md (why)
     tests/      runnable without a Pi
