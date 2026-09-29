@@ -25,7 +25,7 @@ itself, and the desktop can be driven by voice or text from anywhere.
 
 *Read from GitHub on 2026-09-29. 2 branches.*
 
-- **Default branch on GitHub:** `claude/review-codebase-zips-hck9hd`. It does **not** yet have this README or the audit fixes; those are on `claude/repo-code-analysis-y4n1k7`, which contains every commit of `claude/review-codebase-zips-hck9hd` and more, so it can be fast-forwarded without losing anything.
+- **Default branch on GitHub:** `claude/review-codebase-zips-hck9hd`. On 2026-09-29 it was fast-forwarded to `claude/repo-code-analysis-y4n1k7`, so it now has this README and the audit fixes; nothing was overwritten (it previously ended at `42187a7`).
 - **`claude/repo-code-analysis-y4n1k7`** is where the README audit, the screenshots and the fixes were made.
 - Every other branch is already contained in `claude/repo-code-analysis-y4n1k7`; nothing is only on another branch.
 
