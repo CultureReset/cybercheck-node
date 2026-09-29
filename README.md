@@ -1,3 +1,12 @@
+> **Status: replaced.** This is the earlier Raspberry Pi image for a box with a
+> phone on the screen. A Ghost box now uses `Boxes` (the screen) and
+> `nextgent-ghost-image` (the installer). Do not run this image's mirror script,
+> udev rule or docker service on a Ghost box: they would start a second adb owner.
+> `npm test` runs 14 checks on the agent and desktop files (the desktop test skips
+> without Xvfb, xdotool and scrot).
+
+---
+
 # cybercheck-node
 
 A Linux box with a phone on the screen, that a business owner talks to.
